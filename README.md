@@ -37,7 +37,7 @@ PowerBI example (List of fields):
 let
     ResourceName    = "fields",
     BaseUrl         = "https://cropio.com/api/v3/" & Text.From(ResourceName),
-    Token           = "cxiVFSbK3dPj7WbFyzQi",
+    Token           = "X-User-Api-Token",
  
     GetJson = (Url) =>
         let Options = [Headers=[ #"X-User-Api-Token" = Token ]],

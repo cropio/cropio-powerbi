@@ -22,7 +22,7 @@ PowerBI examples to work with Cropio HTTP API
 
 ![Screenshot](/images/complete_query.png)
 
-#### Step 5: After running script Select the column split icon in the Column1 header. Select columns what you need and select **OK** button.
+#### Step 5: After running script Select the column split icon in the ResourceName header. Select columns what you need and select **OK** button.
 
 ![Screenshot](/images/select_data_columns.png)
 

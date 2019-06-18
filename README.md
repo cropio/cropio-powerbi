@@ -89,8 +89,9 @@ let
     Response = List.Generate(() => Json, each (GetObtainedRecordsCount(_)) > 1, each GetPage(GetLastRecordId(_))),
     Data = List.Transform(Response, each _[data]),
     DataToTable = Table.FromList(Data, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
-    DataToColumn = Table.ExpandListColumn(DataToTable, "Column1")
+    DataToColumn = Table.ExpandListColumn(DataToTable, "Column1"),
+    ResultTable = Table.RenameColumns(DataToColumn,{{"Column1", ResourceName}})
 in
-    DataToColumn
+    ResultTable
 ```
 

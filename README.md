@@ -3,11 +3,33 @@ PowerBI examples to work with Cropio HTTP API
 
 > Using examples of PowerBI scripts requires installed PowerBI Desktop application.
 > You can download this application from official [Microsoft page](https://powerbi.microsoft.com/en-us/desktop/).
-> Then open PowerBI Desktop app and find **Edit Queries** navigation button as on the screenshot bellow:
+
+## General workflow
+
+#### Step 1: Open PowerBI Desktop app and find **Edit Queries** navigation button as on the screenshot below:
 
 ![Screenshot](/images/edit_queries.png)
 
-### Obtaining API token with login and password
+#### Step 2: Find *New Source* navigation button and Select *Blank Query*.
+
+![Screenshot](/images/add_new_query.png)
+
+#### Step 3: Right click on created Query1 and select *Advanced Editor* option.
+
+![Screenshot](/images/press_advanced_editor.png)
+
+#### Step 4: Fill in the editor with your code and press *Done* button to complete request.
+
+![Screenshot](/images/complete_query.png)
+
+#### Step 5: After running script Select the column split icon in the Column1 header. Select columns what you need and select **OK** button.
+
+![Screenshot](/images/select_data_columns.png)
+
+
+## Scripts examples
+
+#### Obtaining API token with login and password
 
 User must make Login action and obtain **X-User-Api-Token** token that required for all next requests. **X-User-Api-Token**  is a string, that should be added for all requests to Cropio API (https://docs.cropioapiv3.apiary.io/#reference/authentication/login-request).
 
@@ -24,7 +46,7 @@ in
     Source
 ```
 
-### Get list of resources
+#### Get list of resources
 
 > Before making request you need to pass login action and receive **X-User-Api-Token**. 
 
@@ -65,7 +87,10 @@ let
 
     Json = GetPage(0),
     Response = List.Generate(() => Json, each (GetObtainedRecordsCount(_)) > 1, each GetPage(GetLastRecordId(_))),
-    Data = List.Transform(Response, each _[data])
+    Data = List.Transform(Response, each _[data]),
+    DataToTable = Table.FromList(Data, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    DataToColumn = Table.ExpandListColumn(DataToTable, "Column1")
 in
-    Data
+    DataToColumn
 ```
+

@@ -76,7 +76,7 @@ let
         in  Limit,    
  
     GetLastRecordId = (Json) =>
-        let Id = Json[#"meta"][response][last_record_id]
+        let Id = Json[#"meta"][response][last_record_id] + 1
         in  Id,
 
     GetPage = (FromId) =>

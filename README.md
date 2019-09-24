@@ -95,3 +95,33 @@ in
     ResultTable
 ```
 
+#### Update resource item
+
+> Before making request you need to pass login action and receive **X-User-Api-Token**. 
+
+
+You can choose any resource name instead of "agro_operations": `ResourceName = "agro_operations"`.
+Select agro operation what you want to update and write id instead of `RESOURCE_ITEM_ID`.
+List of available resources you can find at [Cropio API reference description](https://docs.cropioapiv3.apiary.io/#reference).
+As result you will receive updated resource item.
+
+PowerBI example (Update Agro Operation status column): 
+```
+let
+    ResourceName    = "agro_operations",
+    Item_ID         = "RESOURCE_ITEM_ID",
+    BaseUrl         = "https://cropio.com/api/v3/" & Text.From(ResourceName) & "/" & Text.From(Item_ID),
+    Token           = "X-User-Api-Token",
+    Method          = WebMethod.Put,
+    ResourceContentToUpdate = "{ ""data"": { ""status"": ""done""} }",
+
+    UpdateResourceItem = (Url, ContentToUpdate) =>
+        let Options = [Headers=[#"X-User-Api-Token"=Token, accept="application/json", #"X-HTTP-Method-Override"="PATCH", #"Content-Type"="application/json"], Content=Text.ToBinary(ContentToUpdate)],
+            RawData = Web.Contents(Url, Options),
+            Json    = Json.Document(RawData)
+        in  Json,
+    Source = UpdateResourceItem(BaseUrl, ResourceContentToUpdate)[data]
+in
+    Source
+
+```

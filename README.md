@@ -31,7 +31,7 @@ PowerBI examples to work with Cropio HTTP API
 
 #### Obtaining API token with login and password
 
-User must make Login action and obtain **X-User-Api-Token** token that required for all next requests. **X-User-Api-Token**  is a string, that should be added for all requests to Cropio API (https://docs.cropioapiv3.apiary.io/#reference/authentication/login-request).
+User must make Login action and obtain **X-User-Api-Token** token that required for all next requests. **X-User-Api-Token**  is a string, that should be added for all requests to Cropio API (https://cropioapiv3.docs.apiary.io/#reference/authentication/login-request).
 
 PowerBI example:
 
@@ -52,7 +52,7 @@ in
 
 
 You can choose any resource name instead of "fields": `ResourceName = "fields"`.
-List of available resources you can find at [Cropio API reference description](https://docs.cropioapiv3.apiary.io/#reference).
+List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/#reference).
 
 PowerBI example (List of fields): 
 ```
@@ -102,7 +102,7 @@ in
 
 You can choose any resource name instead of "agro_operations": `ResourceName = "agro_operations"`.
 Select agro operation what you want to update and write id instead of `RESOURCE_ITEM_ID`.
-List of available resources you can find at [Cropio API reference description](https://docs.cropioapiv3.apiary.io/#reference).
+List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/#reference).
 As result you will receive updated resource item.
 
 PowerBI example (Update Agro Operation status column): 

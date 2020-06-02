@@ -125,3 +125,68 @@ in
     Source
 
 ```
+
+
+#### Update resource items by table or json values list
+
+> Before making request you need to pass login action and receive **X-User-Api-Token**. 
+
+You can change `TABLE_NAME` for any of your's tables
+
+`TABLE_NAME` example table with `id` and `end_time` columns:
+![Screenshot](/images/table_name_example.png)
+
+You can choose any resource name instead of "machine_tasks": `ResourceName = "machine_tasks"`.
+You can choose any param name instead of `end_time`: 
+`Res = "{ ""data"": { ""end_time"": """ & data & """} }"`.
+
+List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/#reference).
+As result you will receive updated resource item.
+
+PowerBI example (Update Machine Task end_time column): 
+```
+let
+    ResourceName    = "machine_tasks",
+    BaseUrl         = "https://cropio.com/api/v3/" & Text.From(ResourceName) & "/",
+    Token           = "X-User-Api-Token",
+    Method          = WebMethod.Put,
+
+    UpdateResourceItem = (Url, ContentToUpdate) =>
+        let Options = [Headers=[#"X-User-Api-Token"=Token, accept="application/json", #"X-HTTP-Method-Override"="PATCH", #"Content-Type"="application/json"], Content=Text.ToBinary(ContentToUpdate)],
+            RawData = Web.Contents(Url, Options),
+            Json    = Json.Document(RawData)
+        in  Json,
+
+    ResourceContentToUpdateData  = (data) =>
+        let Res = "{ ""data"": { ""end_time"": """ & data & """} }"
+        in Res,
+
+    json1 = Json.Document(Json.FromValue(TABLE_NAME)),
+    count = Table.RowCount(TABLE_NAME)
+in
+    List.Generate(() => 0, each _ < count, each _ + 1, each UpdateResourceItem((BaseUrl & json1{_}[Column1.id]), ResourceContentToUpdateData(json1{_}[Column1.end_time]))[data])
+
+```
+
+#### Hints
+
+###### Create Table from JSON
+```
+    Source = Json.Document("[
+    {
+        ""id"":""1"",
+        ""end_time"":""2019-11-29T14:00:00.000+02:00"",
+    },
+    {
+        ""id"":""2"",
+        ""end_time"":""2016-05-28T19:00:00.000+03:00"",
+    }
+    ]"),
+    #"Преобразовано в таблицу" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Развернутый элемент Column1" = Table.ExpandRecordColumn(#"Преобразовано в таблицу", "Column1", {"id", "end_time"}, {"Column1.id", "Column1.end_time"})
+```
+
+###### Create JSON from Table
+```
+json1 = Json.Document(Json.FromValue(TABLE_NAME))
+```

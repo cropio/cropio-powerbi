@@ -164,8 +164,22 @@ let
     json1 = Json.Document(Json.FromValue(TABLE_NAME)),
     count = Table.RowCount(TABLE_NAME)
 in
-    List.Generate(() => 0, each _ < count, each _ + 1, each UpdateResourceItem((BaseUrl & json1{_}[Column1.id]), ResourceContentToUpdateData(json1{_}[Column1.end_time]))[data])
+    List.Generate(() => 0, each _ < count, each _ + 1, each UpdateResourceItem((BaseUrl & json1{_}[TABLE_NAME.id]), ResourceContentToUpdateData(json1{_}[TABLE_NAME.end_time]))[data])
 
+```
+For multiple params update:
+
+```
+ ResourceContentToUpdateData  = (start_time, end_time) =>
+    let Res = "{
+         ""data"": {
+            ""start_time"": """ & start_time & """,
+            ""end_time"": """ & end_time & """
+         } 
+    }"
+    in Res,
+
+    List.Generate(() => 0, each _ < count, each _ + 1, each UpdateResourceItem((BaseUrl & json1{_}[TABLE_NAME.id]), ResourceContentToUpdateData(json1{_}[TABLE_NAME.start_time], json1{_}[TABLE_NAME.end_time]))[data])
 ```
 
 #### Hints

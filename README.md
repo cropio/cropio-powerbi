@@ -37,13 +37,37 @@ PowerBI example:
 
 ```
 let
-    url = "https://cropio.com/api/v3/sign_in",
-    body = "{ ""user_login"": { ""email"": ""USER-EMAIL"",  ""password"": ""USER-PASSWORD""} }",
-    Parsed_JSON = Json.Document(body),
-    BuildQueryString = Uri.BuildQueryString(Parsed_JSON),
-    Source = Json.Document(Web.Contents(url,[Headers = [#"Content-Type"="application/json"], Content = Text.ToBinary(body) ] ))
+  // Resource name from Cropio API reference.
+  ResourceName    = "sign_in",
+
+  // Base Cropio API URL
+  BaseUrl         = "https://cropio.com/api/",
+
+  // Cropio API version.
+  ApiVersion      = "v3",
+  
+  // Relative resource path for API request.
+  RelativeResourcePath = ApiVersion & "/" & ResourceName,
+
+  // Important! Replace USER-EMAIL and USER-PASSWORD with your own credentials.
+  RequestBody = "{ ""user_login"": { ""email"": ""USER-EMAIL"",  ""password"": ""USER-PASSWORD""} }",
+
+  // Build Request.
+  RequestOptions = [
+    Headers = [
+      #"Content-Type" = "application/json"
+    ], 
+    RelativePath = RelativeResourcePath,
+    Content = Text.ToBinary(RequestBody)
+  ],
+
+  // Get data from Cropio API server.
+  Response = Web.Contents(BaseUrl, RequestOptions),
+
+  // Parse response from JSON.
+  Source = Json.Document(Response)
 in
-    Source
+  Source
 ```
 
 #### Get list of resources
@@ -51,48 +75,77 @@ in
 > Before making request you need to pass login action and receive **X-User-Api-Token**. 
 
 
-You can choose any resource name instead of "fields": `ResourceName = "fields"`.
+You can choose any resource name instead of "field_shapes": `ResourceName = "field_shapes"`.
 List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/#reference).
 
 PowerBI example (List of fields): 
 ```
 let
-    ResourceName    = "fields",
-    BaseUrl         = "https://cropio.com/api/v3/" & Text.From(ResourceName),
-    Token           = "X-User-Api-Token",
+  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
+  
+  // Resource name from Cropio API reference.
+  // Change to resource name you want to extract data from.
+  ResourceName    = "field_shapes",
+   
+  // Important! Replace example value with your API token.
+  Token           = "REPLACE WITH YOUR OWN X-User-Api-Token",
+  
+  // Additional query parameters for filtering/sorting.
+  // Available filtering and soring options should be taken from Cropio API reference.
+  // If not needed, leave empty record [].
+  AdditionalQueryParameters = [
+    // Add parameters here.
+    // Example: 
+    // updated_at_gt_eq="2021-01-01 00:00"
+  ],
+  
+  // Base Cropio API URL
+  BaseUrl         = "https://cropio.com/api/",
+  
+  // Cropio API version. By default, "v3". Sometimes may be "v3a" or "v3b".
+  // Should be taken from Cropio API reference.
+  ApiVersion      = "v3",
+  
+  // Relative resource path for API request.
+  RelativeResourcePath = ApiVersion & "/" & ResourceName,
  
-    GetJson = (Url) =>
-        let Options = [Headers=[ #"X-User-Api-Token" = Token ]],
-            RawData = Web.Contents(Url, Options),
-            Json    = Json.Document(RawData)
-        in  Json,
+  GetJson = (QueryParams) =>
+    let Options = [
+      Headers=[
+        #"X-User-Api-Token" = Token
+      ],
+      RelativePath = RelativeResourcePath,
+      Query = QueryParams
+    ],
+    RawData = Web.Contents(BaseUrl, Options),
+    Json = Json.Document(RawData)
+    in Json,
+    
+  GetPage = (FromId) =>
+    let QueryParams = AdditionalQueryParameters & [from_id=Text.From(FromId)],
+    Json = GetJson(QueryParams)
+    in Json,
  
-    GetObtainedRecordsCount = (Json) =>
-        let Count = Json[#"meta"][response][obtained_records]
-        in  Count,
+  GetObtainedRecordsCount = (Json) =>
+    let Count = Json[meta][response][obtained_records]
+    in Count,
 
-    GetRecordsLimit = (Json) =>
-        let Limit = Json[#"meta"][response][limit]
-        in  Limit,    
- 
-    GetLastRecordId = (Json) =>
-        let Id = Json[#"meta"][response][last_record_id] + 1
-        in  Id,
+  GetRecordsLimit = (Json) =>
+    let Limit = Json[meta][response][limit]
+    in Limit,
 
-    GetPage = (FromId) =>
-        let FromId  = "?from_id=" & Text.From(FromId),
-            Url   = BaseUrl & FromId,
-            Json  = GetJson(Url)
-        in  Json,
+  GetLastRecordId = (Json) =>
+    let Id = Json[meta][response][last_record_id] + 1
+    in Id,
 
-    Json = GetPage(0),
-    Response = List.Generate(() => Json, each (GetObtainedRecordsCount(_)) > 1, each GetPage(GetLastRecordId(_))),
-    Data = List.Transform(Response, each _[data]),
-    DataToTable = Table.FromList(Data, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
-    DataToColumn = Table.ExpandListColumn(DataToTable, "Column1"),
-    ResultTable = Table.RenameColumns(DataToColumn,{{"Column1", ResourceName}})
+  Json = GetPage(0),
+  Response = List.Generate(() => Json, each (GetObtainedRecordsCount(_)) > 1, each GetPage(GetLastRecordId(_))),
+  Data = List.Transform(Response, each _[data]),
+  DataToTable = Table.FromList(Data, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+  DataToColumn = Table.ExpandListColumn(DataToTable, "Column1"),
+  ResultTable = Table.RenameColumns(DataToColumn,{{"Column1", ResourceName}})
 in
-    ResultTable
+  ResultTable
 ```
 
 #### Update resource item

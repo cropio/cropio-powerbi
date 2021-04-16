@@ -163,7 +163,7 @@ let
     in Id,
 
   Json = GetPage(0),
-  Response = List.Generate(() => Json, each (GetObtainedRecordsCount(_)) > 1, each GetPage(GetLastRecordId(_))),
+  Response = List.Generate(() => Json, each (GetObtainedRecordsCount(_)) > 0, each GetPage(GetLastRecordId(_))),
   Data = List.Transform(Response, each _[data]),
   DataToTable = Table.FromList(Data, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
   DataToColumn = Table.ExpandListColumn(DataToTable, "Column1"),

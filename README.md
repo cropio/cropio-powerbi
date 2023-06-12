@@ -28,7 +28,7 @@ PowerBI will request you to enter credentials to authrozie queries to Cropio API
 1. Press on **Edit credentials** button.
 1. Press on **Web API** tab.
 1. Insert Cropio API Token (X-User-Api-Token) into **Key** field.
-1. Check that settings apply to **https://cropio.com/api**.
+1. Check that settings apply to **https://operations.cropwise.com/api**.
 1. Press **Connect** button to proceed.
 
 PowerBI will save credentials. This step should be done only once.
@@ -48,7 +48,7 @@ User must make Login action and obtain **X-User-Api-Token** token.
 This token should be obtained only once. Then it must be added to PowerBI credentials,
 as specified in **Step 5: Add Cropio API Token to PowerBI credentials**.
 
-More details about Cropio API authotrization: https://cropioapiv3.docs.apiary.io/#reference/authentication/login-request.
+More details about Cropio API authotrization: https://cropwiseoperations.docs.apiary.io/#/reference/authentication/login.
 
 ### How to obtain X-User-Api-Token
 
@@ -67,7 +67,7 @@ let
   ResourceName = "sign_in",
 
   // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
+  BaseUrl = "https://operations.cropwise.com/api/",
 
   // Cropio API version.
   ApiVersion = "v3",
@@ -102,7 +102,7 @@ in
 
 > NOTE: You can choose any valid resource instead of `fields`. Example: `ResourceName = "agro_operations"`.
 >
-> List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
+> List of available resources you can find at [Cropio API reference description](https://cropwiseoperations.docs.apiary.io/).
 
 > NOTE: This example would iterate over pages in Cropio API to
 > get full list of records (not only first 100 or 1000).
@@ -110,7 +110,7 @@ in
 PowerBI example for list of Fields:
 ```PowerQuery
 let
-  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
+  // Cropio API reference: https://cropwiseoperations.docs.apiary.io/
 
   // Resource name from Cropio API reference.
   // Change to resource name you want to extract data from.
@@ -123,10 +123,12 @@ let
     // Add parameters here.
     // Example:
     // updated_at_gt_eq = "2021-01-01 00:00"
+    //Paste you api token here
+    user_api_token = "You api token"
   ],
 
   // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
+  BaseUrl = "https://operations.cropwise.com/api/",
 
   // Cropio API version. By default, "v3". Sometimes may be "v3a" or "v3b".
   // Should be taken from Cropio API reference.
@@ -172,63 +174,60 @@ in
   ResultTable
 ```
 
-## Update Field record
+## Create Chemical record
+PowerBI example to CREATE Chemical:
+```PowerQuery
+let
+    url = "https://operations.cropwise.com/api/v3/chemicals",
+    headers = [
+        #"X-User-Api-Token" = "You api key",
+        #"Content-Type" = "application/json"
+    ],
+    //Data we want to create
+    data = "{""data"": {""name"": ""Roundup Super"", ""chemical_type"": ""herbicide"", ""units_of_measurement"": ""liter"", ""toxicity_class"": 1, ""action_term"": 5, ""action_term_units"": ""day"", ""active_substance"": ""100%"", ""drug_form"": ""liquid"", ""influence_method"": ""intestinal"", ""bees_isolating_recommended_term"": 10, ""bees_isolating_recommended_term_units"": ""day"", ""crop_ids"": [2920, 1158], ""sale_term"": ""2023-05-10"", ""term_of_use"": ""2023-02-11""}}",
 
-> NOTE: Without adding **X-User-Api-Token** to PowerBI Credentials, Query won't work.
+    options = [
+        Headers = headers,
+        Content = Text.ToBinary(data)
+    ],
+    response = Json.Document(Web.Contents(url, options)),
+  Navigation = response[data]
+in
+    Navigation
+```
 
-> NOTE: You can choose any valid resource instead of `fields`. Example: `ResourceName = "agro_operations"`.
->
-> List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
+## Update Chemical record
+
+> List of available resources you can find at [Cropio API reference description](https://cropwiseoperations.docs.apiary.io/).
 
 > NOTE: As result of UPDATE request you will receive updated record.
 
-PowerBI example to UPDATE Field name:
+PowerBI example to UPDATE Chemical name:
 ```PowerQuery
+
 let
-  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
-
-  // Resource name from Cropio API reference.
-  ResourceName = "fields",
-
-  // ID of record we want to update in Cropio.
-  // Example: ResourceID = "1",
-  ResourceID = "VALID_ID_OF_FIELD",
-
-  // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
-
-  // Cropio API version. By default, "v3". Sometimes may be "v3a" or "v3b".
-  // Should be taken from Cropio API reference.
-  ApiVersion = "v3",
-
-  // Data we want to update.
-  // In this case we want set Field name to "MyFieldName123".
-  ResourceContentToUpdate = "{ ""data"": { ""name"": ""MyFieldName123""} }",
-
-  // UpdateResource function.
-  UpdateResourceItem = (ResourceName, ResourceID, ContentToUpdate) =>
-    // Relative resource path to send UPDATE request.
-    let ResourceRelativePath = ApiVersion & "/" & ResourceName & "/" & Text.From(ResourceID),
-    // Request Options.
-    RequestOptions = [
-      ApiKeyName = "user_api_token",
-      Content = Text.ToBinary(ContentToUpdate),
-      Headers = [
-        #"Accept" = "application/json",
+  // Cropio API reference: https://cropwiseoperations.docs.apiary.io/
+    // Replace "123" with the unique identifier of the record you want to edit
+    url = "https://operations.cropwise.com/api/v3/chemicals/123",
+    headers = [
+        #"X-User-Api-Token" = "You api token",
         #"Content-Type" = "application/json",
         #"X-HTTP-Method-Override" = "PATCH"
-      ],
-      RelativePath = ResourceRelativePath
     ],
-    RawData = Web.Contents(BaseUrl, RequestOptions),
-    Json = Json.Document(RawData)
-    in Json,
-
-  // Send UPDATE request and receive response.
-  Source = UpdateResourceItem(ResourceName, ResourceID, ResourceContentToUpdate)[data]
+    // Data we want to update.
+    // In this case we want set Chemical name to "Updated Name".
+    data = "{""data"": {""name"": ""Updated Name""}}",
+    options = [
+        Headers = headers,
+        Content = Text.ToBinary(data)
+    ],
+    response = Json.Document(Web.Contents(url, options)),
+  Navigation = response[data]
 in
-  Source
+    Navigation
 ```
+
+
 
 ## Update Machine Tasks records by table or JSON values list
 
@@ -236,11 +235,11 @@ in
 
 > NOTE: You can choose any valid resource instead of `machine_tasks`. Example: `ResourceName = "agro_operations"`.
 >
-> List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
+> List of available resources you can find at [Cropio API reference description](https://cropwiseoperations.docs.apiary.io/).
 
 > NOTE: In this example we updating `end_time` attribute. But you could update any other valid attributes.
 >
-> List of available attributes for each resource you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
+> List of available attributes for each resource you can find at [Cropio API reference description](https://cropwiseoperations.docs.apiary.io/).
 
 > NOTE: IN this example we use `MACHINE_TASKS` PowerBI table with `id` and `end_time` columns as input.
 > Yo could use any other PowerBI table.
@@ -251,13 +250,13 @@ in
 PowerBI example to update Cropio Machine Tasks `end_time` values:
 ```PowerQuery
 let
-  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
+  // Cropio API reference: https://cropwiseoperations.docs.apiary.io/
 
   // Resource name from Cropio API reference.
   ResourceName = "machine_tasks",
 
   // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
+  BaseUrl = "https://operations.cropwise.com/api/",
 
   // Cropio API version. By default, "v3". Sometimes may be "v3a" or "v3b".
   // Should be taken from Cropio API reference.
@@ -318,14 +317,14 @@ For multiple params update (`start_time` and `end_time`):
   RowCount = Table.RowCount(MACHINE_TASKS)
 in
   List.Generate(
-    () => 0, 
-    each _ < count, 
-    each _ + 1, 
+    () => 0,
+    each _ < count,
+    each _ + 1,
     each UpdateResourceItem(
       ResourceName,
       JsonDocument{_}[MACHINE_TASKS.id],
       ResourceContentToUpdateData(
-        JsonDocument{_}[MACHINE_TASKS.start_time], 
+        JsonDocument{_}[MACHINE_TASKS.start_time],
         JsonDocument{_}[MACHINE_TASKS.end_time]
       )
     )[data]

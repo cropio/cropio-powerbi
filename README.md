@@ -27,13 +27,8 @@ PowerBI examples to work with Cropwise Operations HTTP API
 PowerBI will request you to enter credentials to authrozie queries to Cropwise Operations API.
 1. Press on **Edit credentials** button.
 1. Press on **Web API** tab.
-<<<<<<< Updated upstream
-1. Insert Cropio API Token (X-User-Api-Token) into **Key** field.
-1. Check that settings apply to **https://cropio.com/api**.
-=======
 1. Insert Cropwise Operations API Token (X-User-Api-Token) into **Key** field.
 1. You can create you API Token in  **https://operations.cropwise.com/user/linked_devices**.
->>>>>>> Stashed changes
 1. Press **Connect** button to proceed.
 
 PowerBI will save credentials. This step should be done only once.
@@ -46,66 +41,6 @@ PowerBI will save credentials. This step should be done only once.
 
 # Scripts examples
 
-## Obtaining API token with login and password
-
-User must make Login action and obtain **X-User-Api-Token** token.
-
-This token should be obtained only once. Then it must be added to PowerBI credentials,
-as specified in **Step 5: Add Cropwise Operations API Token to PowerBI credentials**.
-
-<<<<<<< Updated upstream
-More details about Cropio API authotrization: https://cropioapiv3.docs.apiary.io/#reference/authentication/login-request.
-
-### How to obtain X-User-Api-Token
-
-> Note: login action do not require token. If PowerBI will ask **Edit Credentials**, you could
-> temporary specify empty **Key**.
-
-- Put example code (below) into **Advanced Editor** and
-- Replace `USER-EMAIL` and `USER-PASSWORD` with your own credentials.
-- Press **Done** button in **Advanced Editor**.
-- You should get response data with record containing `token` row.
-- This request should be done only once. After you had receive token, Query should be deleted.
-
-```PowerQuery
-let
-  // Resource name from Cropio API reference.
-  ResourceName = "sign_in",
-
-  // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
-
-  // Cropio API version.
-  ApiVersion = "v3",
-
-  // Relative resource path for API request.
-  RelativeResourcePath = ApiVersion & "/" & ResourceName,
-
-  // Important! -> Replace USER-EMAIL and USER-PASSWORD with your own credentials <-.
-  RequestBody = "{ ""user_login"": { ""email"": ""USER-EMAIL"",  ""password"": ""USER-PASSWORD""} }",
-
-  // Build Request.
-  RequestOptions = [
-    Headers = [
-      #"Content-Type" = "application/json"
-    ],
-    RelativePath = RelativeResourcePath,
-    Content = Text.ToBinary(RequestBody)
-  ],
-
-  // Get data from Cropio API server.
-  Response = Web.Contents(BaseUrl, RequestOptions),
-
-  // Parse response from JSON.
-  Source = Json.Document(Response)
-in
-  Source
-```
-=======
-More details about Cropwise Operations API authotrization: https://cropwiseoperations.docs.apiary.io/#/reference/authentication/login.
-
->>>>>>> Stashed changes
-
 ## Get full list of Fields
 
 [How to get full list of Fields](videos/screencast_fields.mp4)
@@ -113,24 +48,14 @@ More details about Cropwise Operations API authotrization: https://cropwiseopera
 > NOTE: Without adding **X-User-Api-Token** to PowerBI Credentials, Query won't work.
 
 > NOTE: You can choose any valid resource instead of `fields`. Example: `ResourceName = "agro_operations"`.
->
-<<<<<<< Updated upstream
-> List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
-=======
 > List of available resources you can find at [Cropwise Operations API reference description](https://cropwiseoperations.docs.apiary.io/).
->>>>>>> Stashed changes
-
 > NOTE: This example would iterate over pages in Cropwise Operations API to
 > get full list of records (not only first 100 or 1000).
 
 PowerBI example for list of Fields:
 ```PowerQuery
 let
-<<<<<<< Updated upstream
-  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
-=======
   // Cropwise Operations API reference: https://cropwiseoperations.docs.apiary.io/
->>>>>>> Stashed changes
 
   // Resource name from Cropwise Operations API reference.
   // Change to resource name you want to extract data from.
@@ -142,19 +67,11 @@ let
   AdditionalQueryParameters = [
     // Add parameters here.
     // Example:
-<<<<<<< Updated upstream
-    // updated_at_gt_eq = "2021-01-01 00:00"
-  ],
-
-  // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
-=======
     // updated_at_gt_eq = "2023-01-01 00:00"
   ],
 
   // Base Cropwise Operations API URL
   BaseUrl = "https://operations.cropwise.com/api/",
->>>>>>> Stashed changes
 
   // Cropwise Operations API version. By default, "v3". Sometimes may be "v3a" or "v3b".
   // Should be taken from Cropwise Operations API reference.
@@ -200,34 +117,33 @@ in
   ResultTable
 ```
 
-<<<<<<< Updated upstream
 ## Update Field record
 
 > NOTE: Without adding **X-User-Api-Token** to PowerBI Credentials, Query won't work.
 
 > NOTE: You can choose any valid resource instead of `fields`. Example: `ResourceName = "agro_operations"`.
 >
-> List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
+> List of available resources you can find at [Cropwise Operations API reference description](https://cropwiseoperations.docs.apiary.io/).
 
 > NOTE: As result of UPDATE request you will receive updated record.
 
 PowerBI example to UPDATE Field name:
 ```PowerQuery
 let
-  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
+  // Cropwise Operations API reference: https://cropwiseoperations.docs.apiary.io/
 
-  // Resource name from Cropio API reference.
+  // Resource name from Cropwise Operations API reference.
   ResourceName = "fields",
 
-  // ID of record we want to update in Cropio.
+  // ID of record we want to update in Cropwise Operations.
   // Example: ResourceID = "1",
   ResourceID = "VALID_ID_OF_FIELD",
 
-  // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
+  // Base Cropwise Operations API URL
+  BaseUrl = "https://Cropwise Operations.com/api/",
 
-  // Cropio API version. By default, "v3". Sometimes may be "v3a" or "v3b".
-  // Should be taken from Cropio API reference.
+  // Cropwise Operations API version. By default, "v3". Sometimes may be "v3a" or "v3b".
+  // Should be taken from Cropwise Operations API reference.
   ApiVersion = "v3",
 
   // Data we want to update.
@@ -259,27 +175,17 @@ in
   Source
 ```
 
-=======
->>>>>>> Stashed changes
 ## Update Machine Tasks records by table or JSON values list
 
 > NOTE: Without adding **X-User-Api-Token** to PowerBI Credentials, Query won't work.
 
 > NOTE: You can choose any valid resource instead of `machine_tasks`. Example: `ResourceName = "agro_operations"`.
 >
-<<<<<<< Updated upstream
-> List of available resources you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
-
-> NOTE: In this example we updating `end_time` attribute. But you could update any other valid attributes.
->
-> List of available attributes for each resource you can find at [Cropio API reference description](https://cropioapiv3.docs.apiary.io/).
-=======
 > List of available resources you can find at [Cropwise Operations API reference description](https://cropwiseoperations.docs.apiary.io/).
 
 > NOTE: In this example we updating `end_time` attribute. But you could update any other valid attributes.
 >
 > List of available attributes for each resource you can find at [Cropwise Operations API reference description](https://cropwiseoperations.docs.apiary.io/).
->>>>>>> Stashed changes
 
 > NOTE: IN this example we use `MACHINE_TASKS` PowerBI table with `id` and `end_time` columns as input.
 > Yo could use any other PowerBI table.
@@ -290,22 +196,13 @@ in
 PowerBI example to update Cropwise Operations Machine Tasks `end_time` values:
 ```PowerQuery
 let
-<<<<<<< Updated upstream
-  // Cropio API reference: https://cropioapiv3.docs.apiary.io/
-=======
   // Cropwise Operations API reference: https://cropwiseoperations.docs.apiary.io/
->>>>>>> Stashed changes
 
   // Resource name from Cropwise Operations API reference.
   ResourceName = "machine_tasks",
 
-<<<<<<< Updated upstream
-  // Base Cropio API URL
-  BaseUrl = "https://cropio.com/api/",
-=======
   // Base Cropwise Operations API URL
   BaseUrl = "https://operations.cropwise.com/api/",
->>>>>>> Stashed changes
 
   // Cropwise Operations API version. By default, "v3". Sometimes may be "v3a" or "v3b".
   // Should be taken from Cropwise Operations API reference.
@@ -366,14 +263,14 @@ For multiple params update (`start_time` and `end_time`):
   RowCount = Table.RowCount(MACHINE_TASKS)
 in
   List.Generate(
-    () => 0, 
-    each _ < count, 
-    each _ + 1, 
+    () => 0,
+    each _ < count,
+    each _ + 1,
     each UpdateResourceItem(
       ResourceName,
       JsonDocument{_}[MACHINE_TASKS.id],
       ResourceContentToUpdateData(
-        JsonDocument{_}[MACHINE_TASKS.start_time], 
+        JsonDocument{_}[MACHINE_TASKS.start_time],
         JsonDocument{_}[MACHINE_TASKS.end_time]
       )
     )[data]
@@ -409,14 +306,14 @@ JsonDocument = Json.Document(Json.FromValue(TABLE_NAME))
 
 ```PowerQuery
 let
-  // Cropio API reference: https://cropwiseoperations.docs.apiary.io/
+  // Cropwise Operations API reference: https://cropwiseoperations.docs.apiary.io/
 
-  // Resource name from Cropio API reference.
+  // Resource name from Cropwise Operations API reference.
   // Change to resource name you want to extract data from.
   ResourceName = "fields",
 
   // Additional query parameters for filtering/sorting.
-  // Available filtering and soring options should be taken from Cropio API reference.
+  // Available filtering and sorting options should be taken from Cropwise Operations API reference.
   // If not needed, leave empty record [].
   AdditionalQueryParameters = [
     // Add parameters here.
@@ -426,11 +323,11 @@ let
     user_api_token = "You api token"
   ],
 
-  // Base Cropio API URL
+  // Base Cropwise Operations API URL
   BaseUrl = "https://operations.cropwise.com/api/",
 
-  // Cropio API version. By default, "v3". Sometimes may be "v3a" or "v3b".
-  // Should be taken from Cropio API reference.
+  // Cropwise Operations API version. By default, "v3". Sometimes may be "v3a" or "v3b".
+  // Should be taken from Cropwise Operations API reference.
   ApiVersion = "v3",
 
   // Relative resource path for API request.

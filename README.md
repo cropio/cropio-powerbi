@@ -43,7 +43,11 @@ PowerBI will save credentials. This step should be done only once.
 
 ## Get full list of Fields
 
-[How to get full list of Fields](videos/screencast_fields.mp4)
+<video width="640" height="360" controls>
+  <source src="videos/screencast_fields.mp4" type="video/mp4">
+</video>
+
+
 
 > NOTE: Without adding **X-User-Api-Token** to PowerBI Credentials, Query won't work.
 
@@ -300,9 +304,9 @@ in
 JsonDocument = Json.Document(Json.FromValue(TABLE_NAME))
 ```
 
-### Work with PowerQuery in Excel
+## Work with PowerQuery in Excel
 
-## Example for list of Fields:
+### Example for list of Fields:
 
 ```PowerQuery
 let
@@ -369,7 +373,7 @@ let
 in
   ResultTable
 ```
-## Create Chemical
+### Create Chemical
 PowerBI example to CREATE Chemical:
 ```PowerQuery
 let
@@ -391,7 +395,7 @@ in
     Navigation
 ```
 
-## Update Chemical record
+### Update Chemical record
 
 > List of available resources you can find at [Cropwise Operations API reference description](https://cropwiseoperations.docs.apiary.io/).
 

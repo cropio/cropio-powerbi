@@ -46,7 +46,11 @@ PowerBI will save credentials. This step should be done only once.
 
 
 
-https://github.com/cropio/cropio-powerbi/assets/71318442/3cf079cf-7d51-4e9a-9fcc-b86cfda8eb9c
+
+
+https://github.com/cropio/cropio-powerbi/assets/71318442/8a36d296-81b0-46ee-8785-71c7affa6a03
+
+
 
 
 
